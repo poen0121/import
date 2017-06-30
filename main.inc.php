@@ -26,7 +26,7 @@ if (!class_exists('hpl_import')) {
 				$caller = end($caller);
 				$message = __CLASS__ . '::' . $caller['function'] . '(): ' . $message;
 			}
-			//echo message
+			//response message
 			$title = '';
 			switch ($errno) {
 				case E_PARSE :

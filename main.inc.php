@@ -88,10 +88,9 @@ if (!class_exists('hpl_import')) {
 				if ($rows > $baseDepth) {
 					$message .= PHP_EOL . 'Stack trace:' . PHP_EOL . '<br />';
 					for ($i = $baseDepth; $i < $rows; $i++) {
-						$stack = & $caller[$i];
 						$argsList = ''; //args info
-						if (isset ($stack['args'])) {
-							foreach ($stack['args'] as $sort => $args) {
+						if (isset ($caller[$i]['args'])) {
+							foreach ($caller[$i]['args'] as $sort => $args) {
 								$argsList .= ($sort > 0 ? ', ' : '');
 								switch (gettype($args)) {
 									case 'string' :
@@ -118,7 +117,7 @@ if (!class_exists('hpl_import')) {
 								}
 							}
 						}
-						$message .= '#' . ($i - $baseDepth) . ' ' . $stack['file'] . '(' . $stack['line'] . '):' . (isset ($stack['class']) ? ' ' . $stack['class'] . $stack['type'] : ' ') . $stack['function'] . '(' . $argsList . ')' . ($i < ($rows -1) ? PHP_EOL : '') . '<br />';
+						$message .= '#' . ($i - $baseDepth) . ' ' . $caller[$i]['file'] . '(' . $caller[$i]['line'] . '):' . (isset ($caller[$i]['class']) ? ' ' . $caller[$i]['class'] . $caller[$i]['type'] : ' ') . $caller[$i]['function'] . '(' . $argsList . ')' . ($i < ($rows -1) ? PHP_EOL : '') . '<br />';
 					}
 				}
 			}

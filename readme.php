@@ -3,7 +3,7 @@
 >> Information
 
 	Title		: hpl_import function
-	Revision	: 2.10.1
+	Revision	: 2.10.2
 	Notes		:
 
 	Revision History:
@@ -12,7 +12,7 @@
 	03-23-2016		Poen		03-23-2016	Poen		Create the program.
 	08-01-2016		Poen		08-02-2016	Poen		Reforming the program.
 	09-29-2016		Poen		11-21-2016	Poen		Debug the program error messages.
-	12-05-2016		Poen		06-21-2017	Poen		Improve the program.
+	12-05-2016		Poen		06-30-2017	Poen		Improve the program.
 	03-10-2017		Poen		03-10-2017	Poen		Modify the program to add error stack trace.
 	04-20-2017		Poen		04-20-2017	Poen		Support CLI normal error output.
 	06-21-2017		Poen		06-21-2017	Poen		Fix error log time and line breaks.

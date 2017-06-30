@@ -21,6 +21,8 @@
 
 >> About
 
+	GitHub : https://github.com/poen0121/import
+
 	Import file.
 
 	Handling Returns: include returns FALSE on failure and raises a warning. Successful includes,

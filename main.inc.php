@@ -80,52 +80,57 @@ if (!class_exists('hpl_import')) {
 					$title = 'Error [' . $errno . ']';
 					break;
 			}
-			$message = '<br /><b>' . $title . '</b>: ' . $message . ' in <b>' . $file . '</b> on line <b>' . $line . '</b><br />';
-			if ((isset ($_SERVER['ERROR_STACK_TRACE']) ? preg_match('/^(on|(\+|-)?[0-9]*[1-9]+[0-9]*)$/i', $_SERVER['ERROR_STACK_TRACE']) : false)) { //error stack trace
-				$baseDepth = 1;
-				$caller = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
-				$rows = count($caller);
-				if ($rows > $baseDepth) {
-					$message .= PHP_EOL . 'Stack trace:' . PHP_EOL . '<br />';
-					for ($i = $baseDepth; $i < $rows; $i++) {
-						$argsList = ''; //args info
-						if (isset ($caller[$i]['args'])) {
-							foreach ($caller[$i]['args'] as $sort => $args) {
-								$argsList .= ($sort > 0 ? ', ' : '');
-								switch (gettype($args)) {
-									case 'string' :
-										$argsList .= '\'' . (mb_strlen($args, 'utf-8') > 20 ? mb_substr($args, 0, 17, 'utf-8') . '...' : $args) . '\'';
-										break;
-									case 'array' :
-										$argsList .= 'Array';
-										break;
-									case 'object' :
-										$argsList .= get_class($args) . ' Object';
-										break;
-									case 'resource' :
-										$argsList .= get_resource_type($args) . ' Resource';
-										break;
-									case 'boolean' :
-										$argsList .= ($args ? 'true' : 'false');
-										break;
-									case 'NULL' :
-										$argsList .= 'NULL';
-										break;
-									default :
-										$argsList .= $args;
-										break;
+			/* output message */
+			$is_record = preg_match('/^(on|(\+|-)?[0-9]*[1-9]+[0-9]*)$/i', ini_get('log_errors'));
+		 	$is_display = preg_match('/^(on|(\+|-)?[0-9]*[1-9]+[0-9]*)$/i', ini_get('display_errors'));
+			if ($is_record || $is_display) {
+				$message = '<br /><b>' . $title . '</b>: ' . $message . ' in <b>' . $file . '</b> on line <b>' . $line . '</b><br />';
+				if ((isset ($_SERVER['ERROR_STACK_TRACE']) ? preg_match('/^(on|(\+|-)?[0-9]*[1-9]+[0-9]*)$/i', $_SERVER['ERROR_STACK_TRACE']) : false)) { //error stack trace
+					$baseDepth = 1;
+					$caller = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
+					$rows = count($caller);
+					if ($rows > $baseDepth) {
+						$message .= PHP_EOL . 'Stack trace:' . PHP_EOL . '<br />';
+						for ($i = $baseDepth; $i < $rows; $i++) {
+							$argsList = ''; //args info
+							if (isset ($caller[$i]['args'])) {
+								foreach ($caller[$i]['args'] as $sort => $args) {
+									$argsList .= ($sort > 0 ? ', ' : '');
+									switch (gettype($args)) {
+										case 'string' :
+											$argsList .= '\'' . (mb_strlen($args, 'utf-8') > 20 ? mb_substr($args, 0, 17, 'utf-8') . '...' : $args) . '\'';
+											break;
+										case 'array' :
+											$argsList .= 'Array';
+											break;
+										case 'object' :
+											$argsList .= get_class($args) . ' Object';
+											break;
+										case 'resource' :
+											$argsList .= get_resource_type($args) . ' Resource';
+											break;
+										case 'boolean' :
+											$argsList .= ($args ? 'true' : 'false');
+											break;
+										case 'NULL' :
+											$argsList .= 'NULL';
+											break;
+										default :
+											$argsList .= $args;
+											break;
+									}
 								}
 							}
+							$message .= '#' . ($i - $baseDepth) . ' ' . $caller[$i]['file'] . '(' . $caller[$i]['line'] . '):' . (isset ($caller[$i]['class']) ? ' ' . $caller[$i]['class'] . $caller[$i]['type'] : ' ') . $caller[$i]['function'] . '(' . $argsList . ')' . ($i < ($rows -1) ? PHP_EOL : '') . '<br />';
 						}
-						$message .= '#' . ($i - $baseDepth) . ' ' . $caller[$i]['file'] . '(' . $caller[$i]['line'] . '):' . (isset ($caller[$i]['class']) ? ' ' . $caller[$i]['class'] . $caller[$i]['type'] : ' ') . $caller[$i]['function'] . '(' . $argsList . ')' . ($i < ($rows -1) ? PHP_EOL : '') . '<br />';
 					}
 				}
-			}
-			if (preg_match('/^(on|(\+|-)?[0-9]*[1-9]+[0-9]*)$/i', ini_get('log_errors'))) {
-				error_log('PHP ' . strip_tags($message), 0);
-			}
-			if (preg_match('/^(on|(\+|-)?[0-9]*[1-9]+[0-9]*)$/i', ini_get('display_errors'))) {
-				echo PHP_EOL , (isset ($_SERVER['argc']) && $_SERVER['argc'] >= 1 ? strip_tags($message) : $message) , PHP_EOL;
+				if ($is_record) {
+					error_log('PHP ' . strip_tags($message), 0);
+				}
+				if ($is_display) {
+					echo PHP_EOL , (isset ($_SERVER['argc']) && $_SERVER['argc'] >= 1 ? strip_tags($message) : $message) , PHP_EOL;
+				}
 			}
 			if ($title == 'Fatal error') {
 				exit;
